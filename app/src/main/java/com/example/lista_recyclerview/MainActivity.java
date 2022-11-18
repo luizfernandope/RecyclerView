@@ -33,38 +33,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recyclerView_usuarios);
-        recyclerView.setHasFixedSize(true);//da mais desempenho na listagem
-
-        listaUsuarios = new ArrayList<Usuario>();
-        listaUsuarios.add(new Usuario("111", "s1nha"));
-        listaUsuarios.add(new Usuario("222", "s2nha"));
-        listaUsuarios.add(new Usuario("333", "s3nha"));
-        listaUsuarios.add(new Usuario("444", "s4nha"));
-        listaUsuarios.add(new Usuario("555", "s5nha"));
-        listaUsuarios.add(new Usuario("666", "s6nha"));
-        listaUsuarios.add(new Usuario("777", "s7nha"));
-        listaUsuarios.add(new Usuario("888", "s8nha"));
 
 
-        adapterUsuario = new AdapterUsuario(MainActivity.this, listaUsuarios);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapterUsuario);
-
+        listaUsuarios = new ArrayList<Usuario>();//tem q inicializar a lista para não dar erros
         configurarRetrofit();
         Call<List<Usuario>> mostarUsuarios = apiCall.listarUsuarios();
-
         mostarUsuarios.enqueue(new Callback<List<Usuario>>() {
             @Override
             public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
-                ArrayList<Usuario> lista = new ArrayList<Usuario>();
 
                 for(int i=0; i<response.body().size(); i++){
-                    lista.add(new Usuario(response.body().get(i).getCpf(), response.body().get(i).getSenha()));
-                    System.out.println("\n"+lista.get(i).getCpf() + "|" + lista.get(i).getSenha());
+                    System.out.println("\n"+response.body().get(i).getCpf() + "|" + response.body().get(i).getSenha());
+                    listaUsuarios.add(response.body().get(i));
 
                 }
+                inicializarListagem();
             }
 
             @Override
@@ -72,6 +55,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+
+
+
+    }
+
+    void inicializarListagem(){
+
+            recyclerView = findViewById(R.id.recyclerView_usuarios);
+            recyclerView.setHasFixedSize(true);//da mais desempenho na listagem
+            adapterUsuario = new AdapterUsuario(MainActivity.this, listaUsuarios);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(adapterUsuario);
+
     }
 
     void configurarRetrofit(){
