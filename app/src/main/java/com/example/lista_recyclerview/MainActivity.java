@@ -55,17 +55,23 @@ public class MainActivity extends AppCompatActivity {
         configurarRetrofit();
         Call<List<Usuario>> mostarUsuarios = apiCall.listarUsuarios();
 
-//        mostarUsuarios.enqueue(new Callback<List<Usuario>>() {
-//            @Override
-//            public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Usuario>> call, Throwable t) {
-//
-//            }
-//        });
+        mostarUsuarios.enqueue(new Callback<List<Usuario>>() {
+            @Override
+            public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
+                ArrayList<Usuario> lista = new ArrayList<Usuario>();
+
+                for(int i=0; i<response.body().size(); i++){
+                    lista.add(new Usuario(response.body().get(i).getCpf(), response.body().get(i).getSenha()));
+                    System.out.println("\n"+lista.get(i).getCpf() + "|" + lista.get(i).getSenha());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Usuario>> call, Throwable t) {
+
+            }
+        });
     }
 
     void configurarRetrofit(){
